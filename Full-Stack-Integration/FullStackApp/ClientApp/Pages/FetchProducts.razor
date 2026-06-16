@@ -1,0 +1,106 @@
+@page "/fetchproducts"
+@inject HttpClient Http
+
+<h3>Lista de productos</h3>
+
+@if (productos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else if (productos.Count == 0)
+{
+    <p>No hay productos disponibles.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Categoría</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in productos)
+            {
+                <tr>
+                    <td>@producto.Id</td>
+                    <td>@producto.Nombre</td>
+                    <td>$@producto.Precio.ToString("F2")</td>
+                    <td>@producto.Stock</td>
+                    <td>@producto.Categoria?.Nombre</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong> @errorMessage
+    </div>
+}
+
+@code {
+    private List<Producto>? productos;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarProductos();
+    }
+
+    private async Task CargarProductos()
+    {
+        try
+        {
+            var response = await Http.GetAsync("/api/productlist");
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = $"Error del servidor: {response.StatusCode}";
+                return;
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            
+            var opciones = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            productos = JsonSerializer.Deserialize<List<Producto>>(json, opciones);
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"Error de conexión: {ex.Message}";
+        }
+        catch (JsonException ex)
+        {
+            errorMessage = $"Error al procesar la respuesta JSON: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error inesperado: {ex.Message}";
+        }
+    }
+
+    public class Producto
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public double Precio { get; set; }
+        public int Stock { get; set; }
+        public Categoria? Categoria { get; set; }
+    }
+
+    public class Categoria
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+    }
+}

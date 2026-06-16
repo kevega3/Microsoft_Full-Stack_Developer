@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    <title>SafeVault - Secure Login</title>
+</head>
+<body>
+    <h1>SafeVault Login</h1>
+
+    <form action="/submit" method="post" id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required
+               minlength="3" maxlength="50" pattern="[a-zA-Z0-9_]+"
+               title="Username can only contain letters, numbers, and underscores">
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required
+               title="Please enter a valid email address">
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required
+               minlength="8"
+               title="Password must be at least 8 characters with uppercase, lowercase, digit, and special character">
+
+        <button type="submit">Login</button>
+    </form>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            var username = document.getElementById('username').value;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            if (username.includes('<script') || username.includes('javascript:')) {
+                e.preventDefault();
+                alert('Invalid username');
+                return false;
+            }
+
+            if (email.includes('<script') || email.includes('javascript:')) {
+                e.preventDefault();
+                alert('Invalid email');
+                return false;
+            }
+
+            return true;
+        });
+    </script>
+</body>
+</html>
