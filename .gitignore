@@ -71,6 +71,7 @@ ScaffoldingReadMe.txt
 *.ldf
 *.ndf
 
+txt.txt
 ## BenchmarkDotNet
 BenchmarkDotNet.Artifacts/
 
@@ -92,6 +93,7 @@ actividad1.md
 actividad2.md
 actividad4.md
 actividad3.md
+actividad5.md
 
 instruccion.md
 

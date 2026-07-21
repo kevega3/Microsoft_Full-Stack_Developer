@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Algorithms.Tests/Algorithms.Tests.csproj" />
+  <Project Path="Algorithms/Algorithms.csproj" />
+  <Project Path="Demo/Demo.csproj" />
+</Solution>

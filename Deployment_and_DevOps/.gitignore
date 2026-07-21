@@ -1,0 +1,8 @@
+bin/
+obj/
+Tests/bin/
+Tests/obj/
+logitrack.db
+logitrack.db-shm
+logitrack.db-wal
+TestResults/

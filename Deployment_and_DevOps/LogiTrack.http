@@ -1,0 +1,72 @@
+@host = http://localhost:5193
+@password = Valid1!Password
+@userEmail = user@example.com
+@managerEmail = manager@example.com
+
+### Register a regular user
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "{{password}}"
+}
+
+### Login as regular user
+# @name userLogin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "{{password}}"
+}
+
+### Read inventory as an authenticated user
+GET {{host}}/api/inventory
+Authorization: Bearer {{userLogin.response.body.$.accessToken}}
+
+### Login as the Manager configured with user-secrets
+# @name managerLogin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{managerEmail}}",
+  "password": "{{password}}"
+}
+
+### Create inventory
+# @name createInventory
+POST {{host}}/api/inventory
+Authorization: Bearer {{managerLogin.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Forklift",
+  "quantity": 4,
+  "location": "Warehouse B"
+}
+
+### Create an order
+# @name createOrder
+POST {{host}}/api/orders
+Authorization: Bearer {{managerLogin.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "customerName": "Samir",
+  "inventoryItemIds": [{{createInventory.response.body.$.itemId}}]
+}
+
+### Get the order with item details
+GET {{host}}/api/orders/{{createOrder.response.body.$.orderId}}
+Authorization: Bearer {{managerLogin.response.body.$.accessToken}}
+
+### Delete the order
+DELETE {{host}}/api/orders/{{createOrder.response.body.$.orderId}}
+Authorization: Bearer {{managerLogin.response.body.$.accessToken}}
+
+### Delete the inventory item
+DELETE {{host}}/api/inventory/{{createInventory.response.body.$.itemId}}
+Authorization: Bearer {{managerLogin.response.body.$.accessToken}}
